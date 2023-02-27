@@ -32,13 +32,13 @@ class SubscriptionStreamingResponse
         array $authorizedTopics,
         array $unauthorizedTopics,
         LoggerInterface $logger,
-        ?OutputInterface $output = null
+        OutputInterface $output
     ) {
         $this->eventBus = $eventBus;
         $this->authorizedTopics = $authorizedTopics;
         $this->unauthorizedTopics = $unauthorizedTopics;
         $this->logger = $logger;
-        $this->output = $output ?? new StandardOutput();
+        $this->output = $output;
     }
 
     public function serve(): void

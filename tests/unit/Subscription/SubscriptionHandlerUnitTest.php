@@ -26,6 +26,7 @@ final class SubscriptionHandlerUnitTest extends TestCase
     /** @var AuthorizationInspectorInterface&MockObject */ private $mockAuthorizationInspector;
     /** @var EventBusInterface&MockObject */ private $mockEventBus;
     private LoggerInterface $logger;
+    private OutputInterface $mockOutput;
     private SubscriptionHandler $handler;
 
     protected function setUp(): void
@@ -35,8 +36,14 @@ final class SubscriptionHandlerUnitTest extends TestCase
         $this->mockAuthorizationInspector = $this->createMock(AuthorizationInspectorInterface::class);
         $this->mockEventBus = $this->createMock(EventBusInterface::class);
         $this->logger = new NullLogger();
-        $this->handler =
-            new SubscriptionHandler($config, $this->logger, $this->mockAuthorizationInspector, $this->mockEventBus);
+        $this->mockOutput = $this->createStub(OutputInterface::class);
+        $this->handler = new SubscriptionHandler(
+            $config,
+            $this->logger,
+            $this->mockAuthorizationInspector,
+            $this->mockEventBus,
+            $this->mockOutput
+        );
     }
 
     public function testWithMinimalQuery(): void
@@ -50,8 +57,13 @@ final class SubscriptionHandlerUnitTest extends TestCase
             ->willReturn([new SpecificTopic($topic)])
         ;
 
-        $expectedResponse =
-            new SubscriptionStreamingResponse($this->mockEventBus, [new SpecificTopic($topic)], [], $this->logger);
+        $expectedResponse = new SubscriptionStreamingResponse(
+            $this->mockEventBus,
+            [new SpecificTopic($topic)],
+            [],
+            $this->logger,
+            $this->mockOutput
+        );
         $actualResponse = $this->handler->handleSubscriptionRequest($query, null, null);
         static::assertEquals($expectedResponse, $actualResponse);
     }
@@ -76,7 +88,8 @@ final class SubscriptionHandlerUnitTest extends TestCase
             $this->mockEventBus,
             [new SpecificTopic($authorizedTopic)],
             [new SpecificTopic($unauthorizedTopic)],
-            $this->logger
+            $this->logger,
+            $this->mockOutput
         );
         $actualResponse = $this->handler->handleSubscriptionRequest($query, $authorizationHeader, $cookie);
         static::assertEquals($expectedResponse, $actualResponse);

@@ -25,17 +25,20 @@ class SubscriptionHandler
     /** @psalm-readonly */ private AuthorizationInspectorInterface $authorizationInspector;
     /** @psalm-readonly */ private EventBusInterface $eventBus;
     /** @psalm-readonly */ private LoggerInterface $logger;
+    /** @psalm-readonly */ private OutputInterface $output;
 
     public function __construct(
         PhpMercureConfig $config,
         LoggerInterface $logger,
         ?AuthorizationInspectorInterface $authorizationInspector = null,
-        ?EventBusInterface $eventBus = null
+        ?EventBusInterface $eventBus = null,
+        ?OutputInterface $output = null
     ) {
         $this->config = $config;
         $this->logger = $logger;
         $this->authorizationInspector = $authorizationInspector ?? new AuthorizationInspector();
         $this->eventBus = $eventBus ?? new EventBus($config, $logger);
+        $this->output = $output ?? new StandardOutput();
     }
 
     public function handleSubscriptionRequest(
@@ -81,7 +84,8 @@ class SubscriptionHandler
             $this->eventBus,
             $subscriptionAuthorizedTopics,
             $subscriptionUnauthorizedTopics,
-            $this->logger
+            $this->logger,
+            $this->output
         );
     }
 

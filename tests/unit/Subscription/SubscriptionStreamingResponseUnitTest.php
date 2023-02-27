@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Yakov\PhpMercure\EventBus\EventBusInterface;
 use Yakov\PhpMercure\EventBus\Publication;
+use Yakov\PhpMercure\OutputExpector;
 use Yakov\PhpMercure\Topic\SpecificTopic;
 
 /**
@@ -16,6 +17,8 @@ use Yakov\PhpMercure\Topic\SpecificTopic;
  */
 final class SubscriptionStreamingResponseUnitTest extends TestCase
 {
+    use OutputExpector;
+
     private const AUTHORIZED_TOPIC = 'authorizedTopic';
     private const UNAUTHORIZED_TOPIC = 'unauthorizedTopic';
 
@@ -44,7 +47,7 @@ final class SubscriptionStreamingResponseUnitTest extends TestCase
         $this->setupMockEventBus($publication);
         $this->mockOutput->expects(static::exactly(2))->method('flush');
 
-        $this->expectOutputToBeCalled(["id: {$this->publicationId}\n", "\n"]);
+        $this->expectOutputToBeCalled($this->mockOutput, ["id: {$this->publicationId}\n", "\n"]);
         $this->response->serve();
     }
 
@@ -65,17 +68,20 @@ final class SubscriptionStreamingResponseUnitTest extends TestCase
         $this->setupMockEventBus($publication);
         $this->mockOutput->expects(static::exactly(2))->method('flush');
 
-        $this->expectOutputToBeCalled([
-            "event: {$type}\n",
-            "data: \n",
-            "data: data1\n",
-            "data: data2\n",
-            "data: data3\n",
-            "data: \n",
-            "id: {$this->publicationId}\n",
-            "retry: {$retry}\n",
-            "\n",
-        ]);
+        $this->expectOutputToBeCalled(
+            $this->mockOutput,
+            [
+                "event: {$type}\n",
+                "data: \n",
+                "data: data1\n",
+                "data: data2\n",
+                "data: data3\n",
+                "data: \n",
+                "id: {$this->publicationId}\n",
+                "retry: {$retry}\n",
+                "\n",
+            ]
+        );
         $this->response->serve();
     }
 
@@ -106,26 +112,6 @@ final class SubscriptionStreamingResponseUnitTest extends TestCase
             ->method('get')
             ->willReturnCallback(function () use ($publication) {
                 yield $publication;
-            })
-        ;
-    }
-
-    /**
-     * TODO withConsecutive() is deprecated/removed from PHPUnit with no alternative, so this will have to do.
-     * Credit: https://github.com/sebastianbergmann/phpunit/issues/4026#issuecomment-1441880611.
-     *
-     * @param string[] $lines
-     *
-     * @psalm-suppress InternalMethod
-     */
-    private function expectOutputToBeCalled(array $lines): void
-    {
-        $matcher = static::exactly(\count($lines));
-        $this->mockOutput
-            ->expects($matcher)
-            ->method('output')
-            ->willReturnCallback(function (string $data) use ($lines, $matcher) {
-                $this->assertEquals($lines[$matcher->getInvocationCount() - 1], $data);
             })
         ;
     }

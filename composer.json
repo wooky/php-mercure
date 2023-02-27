@@ -5,6 +5,15 @@
             "Yakov\\PhpMercure\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Yakov\\PhpMercure\\": [
+                "tests/common",
+                "tests/integration",
+                "tests/unit"
+            ]
+        }
+    },
     "require": {
         "ext-sockets": "*",
         "php": ">= 7.4",
@@ -19,7 +28,9 @@
         "psalm/plugin-phpunit": "^0.18.4",
         "friendsofphp/php-cs-fixer": "^3.14",
         "squizlabs/php_codesniffer": "^3.7",
-        "ext-xdebug": "*"
+        "ext-xdebug": "*",
+        "amphp/parallel": "^1.4",
+        "amphp/phpunit-util": "^2.0"
     },
     "scripts": {
         "check": [
@@ -29,6 +40,9 @@
         ],
         "test": [
             "phpunit"
+        ],
+        "test-integration": [
+            "phpunit --testsuite integration"
         ],
         "fix": [
             "phpcbf --standard=PSR12 src tests",
@@ -40,6 +54,7 @@
         "ci": [
             "@check",
             "@test",
+            "@test-integration",
             "@coverage"
         ]
     }
