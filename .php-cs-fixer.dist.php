@@ -22,6 +22,7 @@ return $config->setRules([
             'statements' => array_diff(RuleSets::getSetDefinition('@PhpCsFixer')->getRules()['blank_line_before_statement']['statements'], ['phpdoc']),
         ],
         'php_unit_test_class_requires_covers' => false,
+        'single_line_comment_style' => false,
     ])
     ->setFinder($finder)
     ->setRiskyAllowed(true)

@@ -13,7 +13,7 @@ use Yakov\PhpMercure\Subscription\SubscriptionStreamingResponse;
 
 require '../vendor/autoload.php';
 
-$config = new PhpMercureConfig('!ChangeThisMercureHubJWTSecretKey!', '!ChangeThisMercureHubJWTSecretKey!', false);
+/** @var PhpMercureConfig */ $config = require '../config.php';
 $logger = new Logger('dev', [new StreamHandler('../dev.log')]);
 $cookie = $_COOKIE['mercureAuthorization'];
 
@@ -60,6 +60,9 @@ try {
     echo $th->getMessage();
 }
 
+/**
+ * Credit: https://gist.github.com/wildiney/b0be69ff9960642b4f7d3ec2ff3ffb0b.
+ */
 function getAuthorizationHeader()
 {
     $headers = null;

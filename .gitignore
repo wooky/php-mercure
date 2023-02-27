@@ -2,5 +2,6 @@
 .phpunit.cache/
 coverage/
 vendor/
-.php-cs-fixer.cache
+/.php-cs-fixer.cache
+/config.php
 /dev.log
