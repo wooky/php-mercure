@@ -41,7 +41,7 @@ try {
 
         case 'POST':
             $publicationHandler = new PublicationHandler($config, $logger);
-            $response = $publicationHandler->handlePublicationRequest($query, $authorizationHeader, $cookie);
+            $response = $publicationHandler->handlePublicationRequest(file_get_contents('php://input'), $authorizationHeader, $cookie);
             echo $response;
 
             break;
